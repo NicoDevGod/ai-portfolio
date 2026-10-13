@@ -44,6 +44,13 @@ type Dict = {
     next: string;
     demoTitle: string;
   };
+  future: {
+    title: string;
+    intro: string;
+    effort: string;
+    areas: Record<'infra' | 'quality' | 'model' | 'data' | 'product', string>;
+    levels: Record<'low' | 'medium' | 'high', string>;
+  };
   demo: {
     note: string;
     launch: string;
@@ -140,6 +147,14 @@ export const UI: Record<Lang, Dict> = {
       prev: 'Anterior',
       next: 'Siguiente',
       demoTitle: 'Pruébalo tú mismo',
+    },
+    future: {
+      title: 'Cómo escalaría esto',
+      intro:
+        'Si el proyecto saliera del plan gratuito y del ámbito académico, estos son los siguientes pasos que daría, con el esfuerzo estimado de cada uno.',
+      effort: 'Esfuerzo',
+      areas: { infra: 'Infraestructura', quality: 'Calidad', model: 'Modelo', data: 'Datos', product: 'Producto' },
+      levels: { low: 'Bajo', medium: 'Medio', high: 'Alto' },
     },
     demo: {
       note: 'Corre en el plan gratuito de Render, que duerme tras unos minutos sin uso.',
@@ -239,6 +254,14 @@ export const UI: Record<Lang, Dict> = {
       prev: 'Previous',
       next: 'Next',
       demoTitle: 'Try it yourself',
+    },
+    future: {
+      title: 'How I would scale this',
+      intro:
+        'If the project left the free tier and the academic setting, these are the next steps I would take, with the estimated effort of each.',
+      effort: 'Effort',
+      areas: { infra: 'Infrastructure', quality: 'Quality', model: 'Model', data: 'Data', product: 'Product' },
+      levels: { low: 'Low', medium: 'Medium', high: 'High' },
     },
     demo: {
       note: 'Runs on Render’s free plan, which sleeps after a few idle minutes.',

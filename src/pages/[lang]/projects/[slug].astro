@@ -3,6 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import DemoEmbed from '../../../components/DemoEmbed.astro';
 import { PROJECTS, projectBySlug } from '../../../data/projects';
 import { LESSONS } from '../../../data/lessons';
+import { FUTURE } from '../../../data/future';
 import { LOCALES, type Lang } from '../../../data/site';
 import { getUI, localePath } from '../../../lib/i18n';
 
@@ -21,6 +22,8 @@ const next = PROJECTS[idx + 1];
 const repoUrl = `https://github.com/NicoDevGod/${p.repo}`;
 const docsUrl = `${repoUrl}/blob/HEAD/docs/HOW_IT_WORKS.md`;
 const lessons = LESSONS.filter((l) => p.lessons.includes(l.id));
+const future = FUTURE[p.slug] ?? [];
+const f = ui.future;
 ---
 
 <Layout
@@ -118,6 +121,27 @@ const lessons = LESSONS.filter((l) => p.lessons.includes(l.id));
         </ul>
       </div>
     </section>
+
+    <!-- Scaling options -->
+    {future.length > 0 && (
+      <section class="card mt-14 p-6 md:p-8" aria-labelledby="future-h">
+        <p class="kicker">Roadmap</p>
+        <h2 id="future-h" class="mt-2 font-display text-2xl text-fg">{f.title}</h2>
+        <p class="prose-p mt-2 max-w-2xl">{f.intro}</p>
+        <ul class="mt-6 grid gap-4 md:grid-cols-2">
+          {future.map((item) => (
+            <li class="rounded-xl border border-line bg-black/20 p-5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="chip !text-mint">{f.areas[item.area]}</span>
+                <span class="chip">{f.effort}: {f.levels[item.effort]}</span>
+              </div>
+              <h3 class="mt-3 text-base font-semibold text-fg">{item.title[lang]}</h3>
+              <p class="mt-1.5 text-sm leading-relaxed text-muted">{item.body[lang]}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     <!-- Prev / next -->
     <nav class="mt-16 grid gap-4 border-t border-line pt-8 sm:grid-cols-2" aria-label="Projects">
