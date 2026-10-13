@@ -1,0 +1,142 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import ContactForm from '../../components/ContactForm.astro';
+import { PROJECTS } from '../../data/projects';
+import { LESSONS } from '../../data/lessons';
+import { SITE, type Lang } from '../../data/site';
+import { getUI, langStaticPaths, localePath, withBase } from '../../lib/i18n';
+
+export const getStaticPaths = langStaticPaths;
+
+const lang = Astro.params.lang as Lang;
+const ui = getUI(lang);
+const featured = LESSONS.filter((l) => [1, 3, 8].includes(l.id));
+---
+
+<Layout lang={lang} title={ui.meta.title} description={ui.meta.description}>
+  <!-- Hero -->
+  <section class="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 pt-16 lg:grid-cols-[1.15fr_0.85fr] lg:pt-24">
+    <div class="space-y-7">
+      <p class="kicker">{ui.hero.kicker}</p>
+      <h1 class="font-display text-4xl leading-[1.08] text-fg sm:text-5xl lg:text-6xl">
+        {ui.hero.titleA}
+        <span class="block italic text-mint">{ui.hero.titleB}</span>
+      </h1>
+      <p class="prose-p max-w-xl text-lg">{ui.hero.sub}</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="#projects" class="btn btn-primary">{ui.hero.ctaProjects}</a>
+        <a href={localePath(lang, 'lessons')} class="btn">{ui.hero.ctaLessons}</a>
+      </div>
+    </div>
+
+    <!-- Real log lines captured from the Render container while debugging project 6 -->
+    <div class="card overflow-hidden font-mono text-[0.78rem] leading-relaxed" aria-label="Production memory log">
+      <div class="flex items-center gap-1.5 border-b border-line px-4 py-2.5">
+        <span class="size-2.5 rounded-full bg-white/15"></span>
+        <span class="size-2.5 rounded-full bg-white/15"></span>
+        <span class="size-2.5 rounded-full bg-white/15"></span>
+        <span class="ml-3 text-xs text-muted">render · lora-finetune · logs</span>
+      </div>
+      <div class="space-y-1 p-4 text-muted">
+        <p><span class="text-muted/60">attempt 3</span> · torch + optimum</p>
+        <p>[MEM] after model loaded <span class="float-right text-fg">490.5 MB</span></p>
+        <p>[MEM] generate() start <span class="float-right text-warn">505.6 MB</span></p>
+        <p class="text-warn">==&gt; Out of memory (used over 512MB)</p>
+        <p class="pt-3"><span class="text-muted/60">attempt 4</span> · onnxruntime only</p>
+        <p>[MEM] after session loaded <span class="float-right text-mint">282.7 MB</span></p>
+        <p>[MEM] 6 requests later <span class="float-right text-mint">346.0 MB</span></p>
+        <p class="text-mint">==&gt; Your service is live ✓</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="mx-auto max-w-6xl px-5">
+    <dl class="card grid grid-cols-2 divide-line md:grid-cols-4 md:divide-x">
+      {ui.hero.stats.map((s) => (
+        <div class="space-y-1 p-5">
+          <dt class="font-display text-2xl text-fg sm:text-3xl">{s.value}</dt>
+          <dd class="text-sm text-muted">{s.label}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="mx-auto max-w-6xl px-5 pt-24">
+    <div class="mb-10 max-w-2xl space-y-3">
+      <h2 class="font-display text-3xl text-fg sm:text-4xl">{ui.projects.title}</h2>
+      <p class="prose-p">{ui.projects.intro}</p>
+    </div>
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {PROJECTS.map((p) => <ProjectCard project={p} lang={lang} />)}
+    </div>
+  </section>
+
+  <!-- Lessons teaser -->
+  <section id="lessons" class="mx-auto max-w-6xl px-5 pt-24">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+      <div class="max-w-2xl space-y-3">
+        <h2 class="font-display text-3xl text-fg sm:text-4xl">{ui.lessons.title}</h2>
+        <p class="prose-p">{ui.lessons.intro}</p>
+      </div>
+      <a href={localePath(lang, 'lessons')} class="btn">{ui.lessons.seeAll} →</a>
+    </div>
+    <div class="grid gap-5 md:grid-cols-3">
+      {featured.map((l) => (
+        <article class="card space-y-3 p-6">
+          <p class="font-mono text-sm text-mint">{String(l.id).padStart(2, '0')}</p>
+          <h3 class="font-display text-xl leading-snug text-fg">{l.title[lang]}</h3>
+          <p class="text-sm leading-relaxed text-muted">{l.body[lang]}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- Study deck -->
+  <section id="deck" class="mx-auto max-w-6xl px-5 pt-24">
+    <div class="card grid items-center gap-8 p-8 md:grid-cols-[1fr_auto] md:p-10">
+      <div class="space-y-3">
+        <p class="kicker">{ui.deck.meta}</p>
+        <h2 class="font-display text-3xl text-fg sm:text-4xl">{ui.deck.title}</h2>
+        <p class="prose-p max-w-2xl">{ui.deck.intro}</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href={withBase(SITE.deck)} download class="btn btn-primary">{ui.deck.download}</a>
+        <a href={SITE.deckRepo} target="_blank" rel="noopener noreferrer" class="btn">{ui.deck.repo} ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="mx-auto max-w-6xl px-5 pt-24">
+    <div class="grid gap-10 md:grid-cols-[0.8fr_1.2fr]">
+      <h2 class="font-display text-3xl text-fg sm:text-4xl">{ui.about.title}</h2>
+      <div class="space-y-4">
+        <p class="prose-p">{ui.about.p1}</p>
+        <p class="prose-p">{ui.about.p2}</p>
+        <p class="prose-p">
+          {ui.about.p3}
+          <a href={SITE.oldPortfolio} target="_blank" rel="noopener noreferrer" class="text-mint underline-offset-4 hover:underline">{ui.footer.oldLink} ↗</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="mx-auto max-w-6xl px-5 pt-24">
+    <div class="grid gap-10 md:grid-cols-[0.8fr_1.2fr]">
+      <div class="space-y-4">
+        <h2 class="font-display text-3xl text-fg sm:text-4xl">{ui.contact.title}</h2>
+        <p class="prose-p">{ui.contact.intro}</p>
+        <div class="flex flex-wrap gap-3 pt-2">
+          <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" class="btn">LinkedIn ↗</a>
+          <a href={SITE.github} target="_blank" rel="noopener noreferrer" class="btn">GitHub ↗</a>
+          <a href={SITE.cv} target="_blank" rel="noopener noreferrer" class="btn">CV ↗</a>
+        </div>
+      </div>
+      <ContactForm lang={lang} />
+    </div>
+  </section>
+</Layout>

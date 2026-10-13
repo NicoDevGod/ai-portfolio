@@ -1,0 +1,32 @@
+---
+// Root: pick a language (saved choice > browser language > Spanish) and move on.
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NicoDev</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <noscript><meta http-equiv="refresh" content={`0;url=${base}/es/`} /></noscript>
+    <script is:inline define:vars={{ base }}>
+      (function () {
+        var lang = 'es';
+        try {
+          var saved = localStorage.getItem('preferred-language');
+          if (saved === 'es' || saved === 'en') lang = saved;
+          else if ((navigator.language || '').toLowerCase().indexOf('es') !== 0) lang = 'en';
+        } catch (e) {}
+        location.replace(base + '/' + lang + '/' + location.hash);
+      })();
+    </script>
+  </head>
+  <body style="background:#041a1c;color:#e8f4f2;font-family:system-ui,sans-serif">
+    <p style="padding:2rem">
+      <a href={`${base}/es/`} style="color:#02c39a">Español</a> ·
+      <a href={`${base}/en/`} style="color:#02c39a">English</a>
+    </p>
+  </body>
+</html>

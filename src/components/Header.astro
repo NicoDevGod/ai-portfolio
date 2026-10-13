@@ -1,0 +1,72 @@
+---
+import { SITE, type Lang } from '../data/site';
+import { getUI, localePath, otherLang } from '../lib/i18n';
+
+interface Props { lang: Lang; path?: string }
+const { lang, path = '' } = Astro.props;
+const ui = getUI(lang);
+const other = otherLang(lang);
+
+const links = [
+  { href: `${localePath(lang)}#projects`, label: ui.nav.projects },
+  { href: localePath(lang, 'lessons'), label: ui.nav.lessons },
+  { href: `${localePath(lang)}#deck`, label: ui.nav.deck },
+  { href: `${localePath(lang)}#about`, label: ui.nav.about },
+  { href: `${localePath(lang)}#contact`, label: ui.nav.contact },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-line bg-bg/70 backdrop-blur-md">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
+    <a href={localePath(lang)} class="font-mono text-sm tracking-tight text-fg/85 hover:text-fg" aria-label={SITE.brand}>
+      Nico<span class="text-mint">Dev</span>
+    </a>
+
+    <nav class="hidden items-center gap-6 text-sm text-muted md:flex" aria-label="Main">
+      {links.map((l) => <a href={l.href} class="transition hover:text-fg">{l.label}</a>)}
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href={localePath(other, path)}
+        hreflang={other}
+        data-lang-switch={other}
+        title={ui.langSwitch.to}
+        aria-label={ui.langSwitch.to}
+        class="inline-flex items-center gap-1 rounded-full border border-line bg-white/5 px-2.5 py-1 font-mono text-xs transition hover:bg-white/10"
+      >
+        <span class={lang === 'es' ? 'text-mint' : 'text-muted'}>ES</span>
+        <span class="text-muted/50">/</span>
+        <span class={lang === 'en' ? 'text-mint' : 'text-muted'}>EN</span>
+      </a>
+      <button
+        id="menu-toggle"
+        type="button"
+        class="rounded-full border border-line bg-white/5 px-3 py-1 text-xs md:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+      >{ui.nav.menu}</button>
+    </div>
+  </div>
+
+  <nav id="mobile-nav" class="hidden border-t border-line px-5 py-3 md:hidden" aria-label="Mobile">
+    <ul class="flex flex-col gap-3 text-sm text-muted">
+      {links.map((l) => <li><a href={l.href} class="block py-1 hover:text-fg">{l.label}</a></li>)}
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const panel = document.getElementById('mobile-nav');
+  toggle?.addEventListener('click', () => {
+    const open = panel?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  panel?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      panel.classList.add('hidden');
+      toggle?.setAttribute('aria-expanded', 'false');
+    }),
+  );
+</script>

@@ -1,0 +1,27 @@
+---
+import { SITE, type Lang } from '../data/site';
+import { getUI } from '../lib/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ui = getUI(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-line">
+  <div class="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 text-sm text-muted md:flex-row md:items-center md:justify-between">
+    <div class="space-y-1">
+      <p class="font-mono text-fg/80">Nico<span class="text-mint">Dev</span></p>
+      <p>
+        {ui.footer.oldPortfolio}
+        <a href={SITE.oldPortfolio} target="_blank" rel="noopener noreferrer" class="text-mint underline-offset-4 hover:underline">{ui.footer.oldLink} ↗</a>
+      </p>
+    </div>
+    <div class="flex items-center gap-5">
+      <a href={SITE.github} target="_blank" rel="noopener noreferrer" class="hover:text-fg">GitHub</a>
+      <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-fg">LinkedIn</a>
+      <a href={SITE.cv} target="_blank" rel="noopener noreferrer" class="hover:text-fg">CV</a>
+    </div>
+    <p class="text-xs">© {year} NicoDev. {ui.footer.rights}</p>
+  </div>
+</footer>

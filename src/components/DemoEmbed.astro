@@ -1,0 +1,126 @@
+---
+import type { Lang } from '../data/site';
+import { getUI } from '../lib/i18n';
+
+interface Props { url: string | null; lang: Lang; repoUrl: string }
+const { url, lang, repoUrl } = Astro.props;
+const ui = getUI(lang);
+const d = ui.demo;
+---
+
+{!url ? (
+  <div class="card p-6 text-sm text-muted">
+    <p>{d.none}</p>
+    <a href={repoUrl} target="_blank" rel="noopener noreferrer" class="btn mt-4">GitHub ↗</a>
+  </div>
+) : (
+  <div
+    class="card overflow-hidden"
+    data-demo
+    data-url={url}
+    data-label-waking={d.waking}
+    data-label-slow={d.slow}
+    data-label-live={d.live}
+    data-label-ready={d.ready}
+    data-label-seconds={d.seconds}
+  >
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
+      <div class="flex items-center gap-2 text-sm">
+        <span data-dot class="inline-block size-2 rounded-full bg-warn animate-pulse"></span>
+        <span data-status class="text-muted">{d.waking}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" data-launch class="btn btn-primary !py-1.5 !text-sm" disabled>{d.launch}</button>
+        <button type="button" data-reload class="btn hidden !py-1.5 !text-sm">{d.reload}</button>
+        <a href={url} target="_blank" rel="noopener noreferrer" class="btn !py-1.5 !text-sm">{d.openNew} ↗</a>
+      </div>
+    </div>
+
+    <div class="relative min-h-[22rem] bg-black/20">
+      <div data-placeholder class="flex min-h-[22rem] flex-col items-center justify-center gap-2 px-6 text-center">
+        <p class="text-sm text-muted">{d.note}</p>
+        <p data-hint class="font-mono text-xs text-muted/70">{d.wakingHint}</p>
+      </div>
+      <iframe
+        data-frame
+        title="Live demo"
+        class="hidden h-[40rem] w-full border-0"
+        loading="lazy"
+        allow="clipboard-write"
+      ></iframe>
+    </div>
+  </div>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-demo]').forEach((root) => {
+    const url = (root.dataset.url ?? '').replace(/\/$/, '');
+    const dot = root.querySelector<HTMLElement>('[data-dot]')!;
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+    const launch = root.querySelector<HTMLButtonElement>('[data-launch]')!;
+    const reload = root.querySelector<HTMLButtonElement>('[data-reload]')!;
+    const placeholder = root.querySelector<HTMLElement>('[data-placeholder]')!;
+    const frame = root.querySelector<HTMLIFrameElement>('[data-frame]')!;
+    const hint = root.querySelector<HTMLElement>('[data-hint]')!;
+    const L = root.dataset;
+
+    let ready = false;
+    let wantsLaunch = false;
+    const startedAt = Date.now();
+
+    const tick = setInterval(() => {
+      if (ready) return;
+      const secs = Math.round((Date.now() - startedAt) / 1000);
+      status.textContent = `${secs > 25 ? L.labelSlow : L.labelWaking} ${secs}${L.labelSeconds}`;
+    }, 1000);
+
+    function openFrame() {
+      frame.src = url;
+      frame.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+      launch.classList.add('hidden');
+      reload.classList.remove('hidden');
+      status.textContent = L.labelLive ?? '';
+    }
+
+    function markReady() {
+      ready = true;
+      clearInterval(tick);
+      dot.classList.remove('bg-warn', 'animate-pulse');
+      dot.classList.add('bg-mint');
+      status.textContent = L.labelReady ?? '';
+      hint.classList.add('hidden');
+      launch.disabled = false;
+      if (wantsLaunch) openFrame();
+    }
+
+    // A fetch to a sleeping Render service waits until it boots, so this both
+    // warms the server up and tells us when it is genuinely serving Gradio
+    // (/config is JSON only once the app is up; the wake-up page is HTML).
+    async function warm() {
+      for (let attempt = 0; attempt < 4 && !ready; attempt++) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 120_000);
+        try {
+          const res = await fetch(`${url}/config`, { cache: 'no-store', signal: ctrl.signal });
+          if ((res.headers.get('content-type') ?? '').includes('json')) return markReady();
+        } catch {
+          await new Promise((r) => setTimeout(r, 4000));
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+      // Could not confirm; let the visitor try anyway.
+      markReady();
+    }
+
+    launch.addEventListener('click', () => {
+      wantsLaunch = true;
+      if (ready) openFrame();
+    });
+    reload.addEventListener('click', () => { frame.src = url; });
+
+    launch.disabled = false;
+    warm();
+  });
+</script>

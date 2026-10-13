@@ -1,0 +1,54 @@
+---
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/onest';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { LOCALES, type Lang } from '../data/site';
+import { localePath, withBase } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Path without the locale prefix, used for hreflang and the language switch. */
+  path?: string;
+}
+
+const { lang, title, description, path = '' } = Astro.props;
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(localePath(lang, path), site).href;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#041a1c" />
+    <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+    <link rel="canonical" href={canonical} />
+    {LOCALES.map((l) => <link rel="alternate" hreflang={l} href={new URL(localePath(l, path), site).href} />)}
+  </head>
+  <body>
+    <Header lang={lang} path={path} />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <script>
+      // Remember an explicit language choice so the root redirect honours it.
+      document.querySelectorAll<HTMLElement>('[data-lang-switch]').forEach((el) => {
+        el.addEventListener('click', () => {
+          try { localStorage.setItem('preferred-language', el.dataset.langSwitch ?? ''); } catch {}
+        });
+      });
+    </script>
+  </body>
+</html>

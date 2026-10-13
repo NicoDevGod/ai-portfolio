@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #041a1c;
+  --color-bg-soft: #072a2d;
+  --color-primary: #028090;
+  --color-sea: #00a896;
+  --color-mint: #02c39a;
+  --color-fg: #e8f4f2;
+  --color-muted: #8db3b0;
+  --color-line: rgb(255 255 255 / 0.09);
+  --color-warn: #f08a5d;
+
+  --font-display: "Fraunces Variable", Georgia, serif;
+  --font-sans: "Onest Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: transparent;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(700px circle at 10% 8%, rgb(2 195 154 / 0.14), transparent 60%),
+    radial-gradient(620px circle at 92% 14%, rgb(2 128 144 / 0.22), transparent 60%),
+    radial-gradient(780px circle at 70% 96%, rgb(0 168 150 / 0.12), transparent 60%),
+    var(--color-bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}
+
+::selection { background: rgb(2 195 154 / 0.35); }
+
+@layer components {
+  .font-display { font-family: var(--font-display); font-variation-settings: "opsz" 96, "SOFT" 30; }
+
+  .card {
+    border: 1px solid var(--color-line);
+    background: rgb(255 255 255 / 0.035);
+    border-radius: 1rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid var(--color-line);
+    background: rgb(255 255 255 / 0.04);
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    letter-spacing: 0.01em;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0.6rem 1.15rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    border: 1px solid var(--color-line);
+    background: rgb(255 255 255 / 0.05);
+    transition: transform 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .btn:hover { background: rgb(255 255 255 / 0.1); transform: translateY(-1px); }
+  .btn-primary {
+    background: var(--color-mint);
+    border-color: var(--color-mint);
+    color: #03282a;
+  }
+  .btn-primary:hover { background: #3fe0bc; border-color: #3fe0bc; }
+
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-mint);
+  }
+
+  .prose-p { color: #c5dcda; line-height: 1.75; }
+}

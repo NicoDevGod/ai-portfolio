@@ -1,0 +1,138 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import DemoEmbed from '../../../components/DemoEmbed.astro';
+import { PROJECTS, projectBySlug } from '../../../data/projects';
+import { LESSONS } from '../../../data/lessons';
+import { LOCALES, type Lang } from '../../../data/site';
+import { getUI, localePath } from '../../../lib/i18n';
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((lang) => PROJECTS.map((p) => ({ params: { lang, slug: p.slug } })));
+}
+
+const lang = Astro.params.lang as Lang;
+const p = projectBySlug(Astro.params.slug!)!;
+const ui = getUI(lang);
+const t = ui.project;
+
+const idx = PROJECTS.findIndex((x) => x.slug === p.slug);
+const prev = PROJECTS[idx - 1];
+const next = PROJECTS[idx + 1];
+const repoUrl = `https://github.com/NicoDevGod/${p.repo}`;
+const docsUrl = `${repoUrl}/blob/HEAD/docs/HOW_IT_WORKS.md`;
+const lessons = LESSONS.filter((l) => p.lessons.includes(l.id));
+---
+
+<Layout
+  lang={lang}
+  title={`${p.title[lang]} · NicoDev`}
+  description={p.summary[lang]}
+  path={`projects/${p.slug}`}
+>
+  <article class="mx-auto max-w-4xl px-5 pb-8 pt-12">
+    <a href={`${localePath(lang)}#projects`} class="text-sm text-muted transition hover:text-fg">← {t.back}</a>
+
+    <header class="mt-8 space-y-5">
+      <p class="font-mono text-sm text-mint">{String(p.num).padStart(2, '0')} / 06</p>
+      <h1 class="font-display text-4xl leading-tight text-fg sm:text-5xl">{p.title[lang]}</h1>
+      <p class="max-w-2xl text-xl leading-relaxed text-fg/80">{p.tagline[lang]}</p>
+      <div class="flex flex-wrap gap-1.5">{p.tags.map((tag) => <span class="chip">{tag}</span>)}</div>
+      <div class="flex flex-wrap gap-3 pt-1">
+        <a href={repoUrl} target="_blank" rel="noopener noreferrer" class="btn">{t.repo} ↗</a>
+        <a href={docsUrl} target="_blank" rel="noopener noreferrer" class="btn">{t.docs} ↗</a>
+      </div>
+    </header>
+
+    <p class="prose-p mt-10 text-lg">{p.summary[lang]}</p>
+
+    <!-- Demo -->
+    <section class="mt-12 space-y-4" aria-labelledby="demo-h">
+      <h2 id="demo-h" class="font-display text-2xl text-fg">{t.demoTitle}</h2>
+      <DemoEmbed url={p.demoUrl} lang={lang} repoUrl={repoUrl} />
+    </section>
+
+    <!-- Numbers -->
+    <section class="mt-14" aria-labelledby="num-h">
+      <h2 id="num-h" class="font-display text-2xl text-fg">{t.numbers}</h2>
+      <dl class="mt-5 grid gap-4 sm:grid-cols-3">
+        {p.stats.map((s) => (
+          <div class="card p-5">
+            <dt class="font-display text-3xl text-fg">{s.value}</dt>
+            <dd class="mt-1 text-sm text-muted">{s.label[lang]}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <!-- Problem / solution -->
+    <section class="mt-14 grid gap-5 md:grid-cols-2">
+      <div class="card space-y-3 p-6">
+        <h2 class="font-mono text-xs uppercase tracking-[0.14em] text-warn">{t.problem}</h2>
+        <p class="prose-p">{p.problem[lang]}</p>
+      </div>
+      <div class="card space-y-3 border-mint/30 p-6">
+        <h2 class="font-mono text-xs uppercase tracking-[0.14em] text-mint">{t.solution}</h2>
+        <p class="prose-p">{p.solution[lang]}</p>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="mt-14" aria-labelledby="how-h">
+      <h2 id="how-h" class="font-display text-2xl text-fg">{t.how}</h2>
+      <ol class="mt-6 space-y-4">
+        {p.steps.map((s, i) => (
+          <li class="card flex gap-5 p-6">
+            <span class="font-mono text-lg text-mint">{i + 1}</span>
+            <div class="space-y-2">
+              <h3 class="text-lg font-semibold text-fg">{s.title[lang]}</h3>
+              <p class="prose-p">{s.body[lang]}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- Story -->
+    <section class="mt-14 rounded-2xl border border-warn/30 bg-warn/[0.06] p-6 md:p-8" aria-labelledby="story-h">
+      <p class="font-mono text-xs uppercase tracking-[0.14em] text-warn">{t.story}</p>
+      <h2 id="story-h" class="mt-2 font-display text-2xl text-fg">{p.story.title[lang]}</h2>
+      <p class="prose-p mt-3">{p.story.body[lang]}</p>
+    </section>
+
+    <!-- Stack + lessons -->
+    <section class="mt-14 grid gap-8 md:grid-cols-2">
+      <div class="space-y-3">
+        <h2 class="font-mono text-xs uppercase tracking-[0.14em] text-muted">{t.stack}</h2>
+        <div class="flex flex-wrap gap-2">{p.stack.map((s) => <span class="chip !text-fg/80">{s}</span>)}</div>
+      </div>
+      <div class="space-y-3">
+        <h2 class="font-mono text-xs uppercase tracking-[0.14em] text-muted">{t.lessons}</h2>
+        <ul class="space-y-2 text-sm">
+          {lessons.map((l) => (
+            <li>
+              <a href={`${localePath(lang, 'lessons')}#lesson-${l.id}`} class="text-fg/85 underline-offset-4 transition hover:text-mint hover:underline">
+                <span class="font-mono text-mint">{String(l.id).padStart(2, '0')}</span> {l.title[lang]}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Prev / next -->
+    <nav class="mt-16 grid gap-4 border-t border-line pt-8 sm:grid-cols-2" aria-label="Projects">
+      {prev ? (
+        <a href={localePath(lang, `projects/${prev.slug}`)} class="card p-5 transition hover:border-mint/40">
+          <p class="text-xs text-muted">← {t.prev}</p>
+          <p class="mt-1 font-display text-lg text-fg">{prev.title[lang]}</p>
+        </a>
+      ) : <span />}
+      {next ? (
+        <a href={localePath(lang, `projects/${next.slug}`)} class="card p-5 text-right transition hover:border-mint/40">
+          <p class="text-xs text-muted">{t.next} →</p>
+          <p class="mt-1 font-display text-lg text-fg">{next.title[lang]}</p>
+        </a>
+      ) : <span />}
+    </nav>
+  </article>
+</Layout>

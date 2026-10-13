@@ -1,0 +1,22 @@
+---
+import { withBase } from '../lib/i18n';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 · NicoDev</title>
+    <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+  </head>
+  <body style="background:#041a1c;color:#e8f4f2;font-family:system-ui,sans-serif;min-height:100vh;display:grid;place-items:center;text-align:center">
+    <div>
+      <p style="font-family:ui-monospace,monospace;color:#02c39a">404</p>
+      <h1 style="font-weight:600">Page not found · Página no encontrada</h1>
+      <p style="margin-top:1.5rem">
+        <a href={withBase('es/')} style="color:#02c39a">Español</a> ·
+        <a href={withBase('en/')} style="color:#02c39a">English</a>
+      </p>
+    </div>
+  </body>
+</html>

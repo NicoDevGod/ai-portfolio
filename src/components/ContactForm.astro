@@ -1,0 +1,91 @@
+---
+import type { Lang } from '../data/site';
+import { getUI } from '../lib/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = getUI(lang).contact;
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY ?? '';
+const field =
+  'w-full rounded-lg border border-line bg-white/5 px-3 py-2 text-fg placeholder:text-muted/60 outline-none transition focus:border-mint/60';
+---
+
+<form
+  id="contact-form"
+  class="card flex flex-col gap-4 p-6 md:p-8"
+  novalidate
+  data-sending={c.sending}
+  data-send={c.send}
+  data-success={c.success}
+  data-error={c.error}
+  data-missing={c.missingKey}
+>
+  <input type="hidden" name="access_key" value={accessKey} />
+  <input type="hidden" name="subject" value="New message from NicoDev AI portfolio" />
+  <input type="hidden" name="from_name" value="NicoDev portfolio" />
+  <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
+
+  <div>
+    <label for="contact-name" class="mb-1 block text-sm font-medium text-fg/90">{c.name}</label>
+    <input id="contact-name" name="name" type="text" required class={field} />
+  </div>
+  <div>
+    <label for="contact-email" class="mb-1 block text-sm font-medium text-fg/90">{c.email}</label>
+    <input id="contact-email" name="email" type="email" required class={field} />
+  </div>
+  <div>
+    <label for="contact-message" class="mb-1 block text-sm font-medium text-fg/90">{c.message}</label>
+    <textarea id="contact-message" name="message" rows="5" required class={`${field} resize-none`}></textarea>
+  </div>
+
+  <button id="contact-submit" type="submit" class="btn btn-primary mt-1 disabled:pointer-events-none disabled:opacity-50">{c.send}</button>
+  <p id="contact-success" class="hidden text-sm text-mint" role="status"></p>
+  <p id="contact-error" class="hidden text-sm text-warn" role="alert"></p>
+</form>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const btn = document.getElementById('contact-submit') as HTMLButtonElement | null;
+  const ok = document.getElementById('contact-success');
+  const err = document.getElementById('contact-error');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !btn || !ok || !err) return;
+    const L = form.dataset;
+    ok.classList.add('hidden');
+    err.classList.add('hidden');
+
+    const key = (form.elements.namedItem('access_key') as HTMLInputElement)?.value;
+    if (!key) {
+      err.textContent = L.missing ?? '';
+      err.classList.remove('hidden');
+      return;
+    }
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = L.sending ?? '';
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new FormData(form),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'submit failed');
+      ok.textContent = L.success ?? '';
+      ok.classList.remove('hidden');
+      form.reset();
+    } catch {
+      err.textContent = L.error ?? '';
+      err.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = L.send ?? '';
+    }
+  });
+</script>
