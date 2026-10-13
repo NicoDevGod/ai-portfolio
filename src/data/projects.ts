@@ -24,7 +24,7 @@ export const PROJECTS: Project[] = [
     slug: 'rag-chatbot',
     num: 1,
     repo: 'rag-chatbot-cv',
-    demoUrl: null,
+    demoUrl: 'https://rag-chatbot-cv-zre6.onrender.com',
     tags: ['RAG', 'LLM', 'Embeddings'],
     stack: ['LangChain', 'Chroma', 'FastEmbed', 'Groq', 'Gradio'],
     title: { es: 'Chatbot RAG', en: 'RAG Chatbot' },

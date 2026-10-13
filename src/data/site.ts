@@ -4,8 +4,8 @@ export const SITE = {
   github: 'https://github.com/NicoDevGod',
   linkedin: 'https://www.linkedin.com/in/nicolas-angel-b140b92a6/',
   cv: 'https://drive.google.com/file/d/1slV72I8ys4wKNg32SVFVX42Y984wO7Wn/view?usp=drive_link',
-  // Previous (web development) portfolio -- swap for its live URL once known.
-  oldPortfolio: 'https://github.com/NicoDevGod/porfolioAstro',
+  // Previous (web development) portfolio.
+  oldPortfolio: 'https://porfolionicodev.netlify.app/',
   deck: 'downloads/seis-proyectos-de-ia.pptx',
   deckRepo: 'https://github.com/NicoDevGod/study-deck',
 } as const;
