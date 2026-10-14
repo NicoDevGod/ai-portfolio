@@ -344,7 +344,7 @@ export const PROJECTS: Project[] = [
     stats: [
       { value: '0.98%', label: { es: 'parámetros entrenados (811K de 82M)', en: 'trainable parameters (811K of 82M)' } },
       { value: '3.2MB', label: { es: 'adaptador (vs. ~330MB)', en: 'adapter (vs. ~330MB)' } },
-      { value: '490→240MB', label: { es: 'RAM en reposo en Render', en: 'idle RAM on Render' } },
+      { value: '490→283MB', label: { es: 'RAM al iniciar en Render', en: 'startup RAM on Render' } },
     ],
     problem: {
       es: 'Un fine-tuning completo actualiza los ~82M de parámetros y produce una copia entera del modelo por cada tarea. Es caro en cómputo y en almacenamiento para un cambio que, en el fondo, es pequeño.',
@@ -380,8 +380,8 @@ export const PROJECTS: Project[] = [
     story: {
       title: { es: 'Cuatro intentos de deploy', en: 'Four deploy attempts' },
       body: {
-        es: 'PyTorch directo murió por memoria. ONNX + optimum también, aunque medía ~425MB en Windows. Con logging de memoria en el contenedor de Render apareció la causa: tras cargar el modelo quedaban 6MB de margen, porque solo importar torch costaba 100-200MB. Se eliminó del todo: de ~490MB a ~240MB en reposo, 6 de 6 generaciones estables.',
-        en: 'Plain PyTorch died on memory. ONNX + optimum did too, even though it measured ~425MB on Windows. Memory logging inside Render’s container revealed the cause: 6MB of headroom after loading the model, because merely importing torch cost 100-200MB. It was removed entirely: ~490MB down to ~240MB idle, 6 of 6 generations stable.',
+        es: 'PyTorch directo murió por memoria. ONNX + optimum también, aunque medía ~425MB en Windows. Con logging de memoria en el contenedor de Render apareció la causa: tras cargar el modelo quedaban 6MB de margen, porque solo importar torch costaba 100-200MB. Se eliminó del todo: de ~490MB a ~283MB al iniciar (~345MB bajo uso), 6 de 6 generaciones estables.',
+        en: 'Plain PyTorch died on memory. ONNX + optimum did too, even though it measured ~425MB on Windows. Memory logging inside Render’s container revealed the cause: 6MB of headroom after loading the model, because merely importing torch cost 100-200MB. It was removed entirely: ~490MB down to ~283MB at startup (~345MB under load), 6 of 6 generations stable.',
       },
     },
     lessons: [1, 2, 3, 4, 7, 8],

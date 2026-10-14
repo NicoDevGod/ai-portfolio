@@ -85,7 +85,7 @@ export const UI: Record<Lang, Dict> = {
       ctaLessons: 'Leer las lecciones',
       stats: [
         { value: '6', label: 'proyectos en producción' },
-        { value: '490→240MB', label: 'RAM tras eliminar torch' },
+        { value: '490→283MB', label: 'RAM tras eliminar torch' },
         { value: '0.98%', label: 'de pesos entrenados con LoRA' },
         { value: '54', label: 'diapositivas de estudio' },
       ],
@@ -192,7 +192,7 @@ export const UI: Record<Lang, Dict> = {
       ctaLessons: 'Read the lessons',
       stats: [
         { value: '6', label: 'projects in production' },
-        { value: '490→240MB', label: 'RAM after dropping torch' },
+        { value: '490→283MB', label: 'RAM after dropping torch' },
         { value: '0.98%', label: 'of weights trained with LoRA' },
         { value: '54', label: 'study slides' },
       ],
